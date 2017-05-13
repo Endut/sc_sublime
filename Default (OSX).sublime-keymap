@@ -187,6 +187,15 @@
         }]
     },
     {
+        "command": "super_collider_immediate_help",
+        "keys":    ["ctrl+d"],
+        "context": [{
+            "key":      "selector",
+            "operator": "equal",
+            "operand":  "source.supercollider"
+        }]
+    },
+    {
         "command": "super_collider_open_class",
         "keys":    ["ctrl+s", "ctrl+c"],
         "context": [{

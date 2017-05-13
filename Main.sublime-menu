@@ -114,11 +114,23 @@
                         "caption": "Open User Support Dir",
                         "command": "super_collider_open_user_support_dir"
                     },
+                    
                     {
                         "caption": "Open Startup File",
                         "command": "super_collider_open_startup_file"
+                    },
+
+                    { "caption": "-"},
+                    
+                    {
+                        "caption": "SuperCollider: Start Recording",
+                        "command": "super_collider_start_recording"
+                    },
+                    {
+                        "caption": "SuperCollider: Stop Recording",
+                        "command": "super_collider_stop_recording"
                     }
-                ]
+              ]
             }
         ]
     },

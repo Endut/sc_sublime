@@ -1,3 +1,4 @@
+from datetime import datetime
 import sublime
 import sublime_plugin
 import os
@@ -6,22 +7,37 @@ import threading
 from collections import deque
 
 TERMINATE_MSG = 'SublimeText: sclang terminated!\n'
-SYNTAX_SC = 'Packages/SuperCollider/SuperCollider.tmLanguage'
+# SYNTAX_SC = 'Packages/supercollider-sublime/SuperCollider.tmLanguage'
+SYNTAX_SC = 'Packages/supercollider-sublime/SuperCollider.tmLanguage'
 SYNTAX_PLAIN = 'Packages/Text/Plain text.tmLanguage'
+RECORDINGS_DIR = '/Volumes/DATA/Recordings/'
+
 
 sc = None
+
+
 
 
 def plugin_loaded():
     global sc
     sc = SuperColliderProcess()
 
+   
 
 def plugin_unloaded():
     global sc
     if sc is not None:
         sc.stop()
         sc.deactivate_post_view(TERMINATE_MSG)
+
+def get_word():
+    view = sublime.active_window().active_view()
+    sel = view.sel()
+    point = sel[0]
+    reg = view.word(point)
+    word = view.substr(reg)
+    return word
+
 
 
 class SuperColliderProcess():
@@ -171,6 +187,7 @@ Please check the *sc_path* setting in your SuperCollider package settings"""
 
         self.sclang_thread.daemon = True  # dies with the program
         self.sclang_thread.start()
+        # self.execute_silently('Document.implementationClass = {};'.format(DOCUMENT_CLASS))
         sublime.status_message('Starting SuperCollider')
 
     def kill(self):
@@ -682,17 +699,29 @@ class SuperColliderRestoreVolume(SuperColliderChangeVolume):
 
 
 class SuperColliderStartRecording(SuperColliderAliveAbstract,
-                                  sublime_plugin.ApplicationCommand):
-
+                                 sublime_plugin.ApplicationCommand):
+    string = ''
+    
     def run(self):
-        sc.execute_silently('Server.default.record;')
+        file_name = sublime.active_window().active_view().file_name()
+        time = datetime.now()
+        file_ending = (time.year, time.month, time.day, time.hour, time.minute, time.second)
+        string = os.path.splitext(file_name)[0]
+        string += '_{}{}{}_{}{}{}.aif'.format(*file_ending) 
+        SuperColliderStartRecording.string = string
+        sc.execute_silently('Server.default.record("{}");'.format(string))
 
 
 class SuperColliderStopRecording(SuperColliderAliveAbstract,
                                  sublime_plugin.ApplicationCommand):
 
     def run(self):
+        string = SuperColliderStartRecording.string
+        linkpath = RECORDINGS_DIR+os.path.basename(string)
         sc.execute_silently('Server.default.stopRecording;')
+        os.symlink(string, linkpath)
+
+
 
 # ------------------------------------------------------------------------------
 # Open/Info Commands
@@ -715,11 +744,12 @@ class SuperColliderSelectionOrInputAbstract(sublime_plugin.WindowCommand):
 
 
 class SuperColliderOpenClassCommand(SuperColliderAliveAbstract,
-                                    SuperColliderSelectionOrInputAbstract):
+                                    sublime_plugin.ApplicationCommand):
 
     def run(self):
+        klass = get_word()
         super(SuperColliderOpenClassCommand, self).run('Open Class File for',
-                                                       sc.open_class)
+                                                       sc.open_class(klass))
 
 
 class SuperColliderOpenUserSupportDirCommand(SuperColliderAliveAbstract,
@@ -738,15 +768,20 @@ class SuperColliderOpenStartupFileCommand(SuperColliderAliveAbstract,
 
 
 class SuperColliderHelpCommand(SuperColliderAliveAbstract,
-                               SuperColliderSelectionOrInputAbstract):
+                                SuperColliderSelectionOrInputAbstract):
 
     def run(self):
         super(SuperColliderHelpCommand, self).run(
             'Open Help for', sc.open_help)
 
 
+class SuperColliderImmediateHelpCommand(SuperColliderAliveAbstract, sublime_plugin.ApplicationCommand):
+    def run(self):
+        word = get_word()
+        sc.open_help(word)
+
 class SuperColliderDumpInterfaceCommand(SuperColliderAliveAbstract,
-                                        SuperColliderSelectionOrInputAbstract):
+                                        sublime_plugin.ApplicationCommand):
 
     def run(self):
         cmd = '''
@@ -853,3 +888,15 @@ class SuperColliderListener(sublime_plugin.EventListener):
             value = sc.post_view.substr(sublime.Region(0, sc.post_view.size()))
             sc.cache_post_view(value)
             sc.panel_open = False
+
+
+
+# ==============================================================================
+# Document Commands
+# ==============================================================================
+class ChangeDocument(sublime_plugin.EventListener):
+
+    def on_activated(self, view):
+        path = view.file_name() or ''
+        sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
+        

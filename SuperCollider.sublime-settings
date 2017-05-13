@@ -2,7 +2,7 @@
     // SuperCollider directory
     // Mac OS X
     "sc_path": {
-        "osx": "/Applications/SuperCollider/SuperCollider.app/Contents/MacOS/sclang",
+        "osx": "/Applications/SuperCollider.app/Contents/MacOS/sclang",
         "windows": "C:\\Program Files\\SuperCollider\\sclang.exe",
         "linux": "/usr/local/bin/sclang"
     },

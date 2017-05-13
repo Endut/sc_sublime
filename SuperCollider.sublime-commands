@@ -80,6 +80,10 @@
       "command": "super_collider_help"
     },
     {
+      "caption": "SuperCollider: Immediate Help",
+      "command": "super_collider_immediate_help"
+    },
+    {
       "caption": "SuperCollider: Dump Interface",
       "command": "super_collider_dump_interface"
     },
@@ -91,6 +95,16 @@
       "caption": "SuperCollider: Get Method Arguments",
       "command": "super_collider_get_method_args"
     },
-    { "caption": "SuperCollider: Get UGen Arguments",
-      "command": "super_collider_get_ugen_args" }
+    {
+      "caption": "SuperCollider: Get UGen Arguments",
+      "command": "super_collider_get_ugen_args"
+    },
+    {
+      "caption": "SuperCollider: Start Recording",
+      "command": "super_collider_start_recording"
+    },
+    {
+      "caption": "SuperCollider: Stop Recording",
+      "command": "super_collider_stop_recording"
+    }
 ]
