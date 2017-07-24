@@ -7,7 +7,6 @@ import threading
 from collections import deque
 
 TERMINATE_MSG = 'SublimeText: sclang terminated!\n'
-# SYNTAX_SC = 'Packages/supercollider-sublime/SuperCollider.tmLanguage'
 SYNTAX_SC = 'Packages/supercollider-sublime/SuperCollider.tmLanguage'
 SYNTAX_PLAIN = 'Packages/Text/Plain text.tmLanguage'
 RECORDINGS_DIR = '/Volumes/DATA/Recordings/'
@@ -408,8 +407,10 @@ class SuperColliderStartInterpreterCommand(SuperColliderDeadAbstract,
                                            sublime_plugin.ApplicationCommand):
 
     def run(self):
+        path = sublime.active_window().active_view().file_name()
         sc.start()
         sc.open_post_view()
+        sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
 
 
 class SuperColliderStopInterpreterCommand(SuperColliderAliveAbstract,
@@ -495,7 +496,9 @@ class SuperColliderRecompileCommand(SuperColliderAliveAbstract,
                                     sublime_plugin.ApplicationCommand):
 
     def run(self):
+        path = sublime.active_window().active_view().file_name()
         sc.execute('\x18')
+        sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
 
 
 class SuperColliderToggleTraceOsc(SuperColliderAliveAbstract,
@@ -889,14 +892,14 @@ class SuperColliderListener(sublime_plugin.EventListener):
             sc.cache_post_view(value)
             sc.panel_open = False
 
+    def on_activated(self, view):
+        path = view.file_name() or ''
+        sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
 
 
 # ==============================================================================
 # Document Commands
 # ==============================================================================
-class ChangeDocument(sublime_plugin.EventListener):
+# class ChangeDocument(sublime_plugin.EventListener):
 
-    def on_activated(self, view):
-        path = view.file_name() or ''
-        sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
         

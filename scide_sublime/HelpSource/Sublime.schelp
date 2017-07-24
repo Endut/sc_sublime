@@ -1,0 +1,24 @@
+TITLE:: Sublime
+summary:: replacement for ScIDE when using SublimeText
+categories:: Classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+Sublime Ide Class
+redirects Document to SublimeDocument implementation
+at startup
+
+
+CLASSMETHODS::
+initClass
+openHelpUrl
+
+
+INSTANCEMETHODS::
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
