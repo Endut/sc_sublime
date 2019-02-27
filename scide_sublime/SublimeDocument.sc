@@ -39,7 +39,7 @@ SublimeDocument : Document {
 		^allDocuments.size()
 	}
 	propen { | path, selectionStart=0, selectionLength=0 |
-		format("/usr/local/bin/subl %", path).unixCmd;
+		format("/usr/local/bin/subl --add \'%\'", path).unixCmd;
 		^this
 	}
 

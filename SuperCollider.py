@@ -896,6 +896,15 @@ class SuperColliderListener(sublime_plugin.EventListener):
         path = view.file_name() or ''
         sc.execute_silently('Sublime.currentPath = "{}";'.format(path))
 
+    def on_post_save_async(self, view):
+        if sc is None:
+            return
+        else:
+            path = view.file_name() or ''
+            sc.execute('Mod.reload_on_save("{}")'.format(path))
+
+
+
 
 # ==============================================================================
 # Document Commands

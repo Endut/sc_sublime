@@ -5,7 +5,7 @@ Sublime {
 
 	*initClass {
 		Document.implementationClass = SublimeDocument;
-		StartUp.add( { Document.implementationClass.startup; } );
+		StartUp.add( { Document.implementationClass.startup;} );
 	}
 
 	*openHelpUrl { arg url;
@@ -13,13 +13,14 @@ Sublime {
 	}
 
 	*currentPath_ { arg path;
-		Import.all.at(path.asSymbol) !? { arg module;
-			"this document defines a module".postln;
-			savedEnv = currentEnvironment;
+		savedEnv = currentEnvironment;
+		if (Mod.all.at(path.asSymbol).notNil) {
+			var module = Mod.all.at(path.asSymbol);
+			module.printModule;
 			currentEnvironment = module;
-			} ?? {
-				currentEnvironment = savedEnv ?? topEnvironment;
-				};
+			} {
+				currentEnvironment = topEnvironment;
+			};
 		currentPath = path;
 	}
 }
